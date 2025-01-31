@@ -10,7 +10,7 @@ var usersRouter = require('./routes/users');
 var petsRouter = require('./routes/pets');
 var categoriesRouter = require('./routes/categories');
 var authRouter = require('./routes/auth');
-var adminRouter = require('./routes/admin');
+var adminRouter = require('./routes/admin'); 
 
 var app = express();
 // view engine setup
