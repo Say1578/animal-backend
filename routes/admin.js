@@ -31,30 +31,41 @@ router.get('/pets/:id', authMiddleware, async function(req, res, next) {
 
 router.post('/pets', authMiddleware,
   [
-  body('category_id').isInt().withMessage('category_id must be an integer'),
-  body('name').notEmpty().withMessage('name is required'),
-  body('price').isFloat({ min: 0 }).withMessage('price must be a positive number'),
-  body('description').optional().isString().withMessage('description must be a string'),
+    body('category_id').isInt().withMessage('category_id must be an integer'),
+    body('name').notEmpty().withMessage('name is required'),
+    body('price').isFloat({ min: 0, max: 999999 }).withMessage('price must be a positive number and not exceed 999,999'),
+    body('description').optional().isString().withMessage('description must be a string'),
+    body('region').notEmpty().withMessage('region is required'),
+    body('email').isEmail().withMessage('email must be a valid email address'),
+    body('phone').isString().withMessage('phone must be a string'),
+    body('additional_phone').optional().isString().withMessage('additional phone must be a string'),
+    body('telegram').optional().isString().withMessage('telegram must be a string'),
+    body('images').optional().isArray().withMessage('images must be an array')
   ],
-  async function(req, res) {
-
+  async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
+      console.log(errors)
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      const { category_id, name, price, description } = req.body;
+      const { category_id, name, price, description, region, email, phone, additional_phone, telegram, images } = req.body;
       const userId = req.user.id;
 
-      const result = await pool.query('INSERT INTO pets (user_id, category_id, name, price, description) VALUES ($1, $2, $3, $4, $5) RETURNING *', [userId, category_id, name, price, description]); 
+      const result = await pool.query(`
+        INSERT INTO pets (user_id, category_id, name, price, description, region, email, phone, additional_phone, telegram, images)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *
+      `, [userId, category_id, name, price, description, region, email, phone, additional_phone, telegram, images]);
+
       res.status(201).json(result.rows[0]);
     } catch (err) {
       console.error('Ошибка при добавлении питомца:', err.message);
       res.status(500).send('Ошибка сервера');
     }
-  });
+  }
+);
 
 router.patch('/pets/:id', authMiddleware, async function(req, res) {
     try {

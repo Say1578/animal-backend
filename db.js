@@ -62,7 +62,7 @@ const createUsers = async () => {
     try {
       await pool.query(query);
       console.log('Table "categories" created successfully');
-      createPets(); //fillCategories();
+      createPets(); // fillCategories();
     } catch (err) {
       console.error('Error creating table:', err.message);
     } finally {
@@ -98,28 +98,31 @@ const createUsers = async () => {
 
   const createPets = async () => {
     const query = `
-      CREATE TABLE IF NOT EXISTS pets (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER NOT NULL,
-          category_id INTEGER NOT NULL,
-          name VARCHAR(255) NOT NULL,
-          price DECIMAL NOT NULL,
-          description TEXT NULL,
-          created_at TIMESTAMP DEFAULT NOW(),
-          updated_at TIMESTAMP DEFAULT NOW(),
-          CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-          CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
-
+    CREATE TABLE IF NOT EXISTS pets (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        category_id INTEGER NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        description TEXT NULL,
+        region VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(20) NOT NULL,
+        additional_phone VARCHAR(20) NULL,
+        telegram VARCHAR(50) NULL,
+        images VARCHAR[] NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
       );
     `;
-  
+
     try {
       await pool.query(query);
       console.log('Table "pets" created successfully');
     } catch (err) {
       console.error('Error creating table:', err.message);
-    } finally {
-    //   await pool.end();
     }
   };
 
